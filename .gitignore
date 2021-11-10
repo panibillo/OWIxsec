@@ -1,0 +1,13 @@
+**.pyc
+**.bak
+**.ini
+**.zip
+**.zipx
+**.7z
+**.png
+**.sqlite
+data/**
+doc/**
+scratch/**
+.project
+.pydevproject
