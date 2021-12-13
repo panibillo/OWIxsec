@@ -270,6 +270,8 @@ Version
 import numpy as np
 import os
 
+from version import __version__ as XSEC_VERSION
+
 from xsec_legend import xsec_legends, map_legends
 
 from singleton_section_line import singleton_section_line 
@@ -349,7 +351,7 @@ class Xsec_main():
         o   If the output file extension is not recognized, it is set to a
             hard-coded default type - initially 'png'.
         '''
-
+        self.__version__ = XSEC_VERSION
         self.cmds = cmds   
 
         # initialize output module
@@ -1272,8 +1274,5 @@ if __name__ == '__main__':
     from xsec_cl import xsec_parse_args 
     cmds = xsec_parse_args()
     xsec = Xsec_main(cmds)
-#     testsingleton()
-#     testfenceline()
-#     testprojected()
       
     print (r'\\\\\\\\\\\\ --DONE xsec_main -- //////////////')
