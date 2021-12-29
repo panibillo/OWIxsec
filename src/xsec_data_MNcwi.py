@@ -29,6 +29,7 @@ o   Outline of data reading process:
 """     
 #import abc
 from collections import defaultdict
+import os
 
 from cwi_db import c4db
 from xsec_data_abc import * # xsec_data_abc, isnum
@@ -39,6 +40,9 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(name)s:%(funcName)s:%(lineno)d - %(levelname)s -- %(message)s')
 logger.setLevel(logging.INFO)
 
+def flt(x):
+    try: return float(x)
+    except: return x
 class  xsec_data_MNcwi(xsec_data_abc):  
     """
     Attributes
@@ -147,6 +151,7 @@ class  xsec_data_MNcwi(xsec_data_abc):
                     multi-well line to a singleton. 
         """
         # Database connection
+        assert os.path.exists(db_name), os.path.abspath(db_name)
         c4 = c4db(open_db=True, commit=False, db_name=db_name) 
         query = c4.cur.execute
         self.datasource = c4.db_name
@@ -286,7 +291,7 @@ class  xsec_data_MNcwi(xsec_data_abc):
         # assume that c4locs is more reliable.
         # Having an xy coordinate could be required at this point, but is not.
         for row in dat['c4ix']:
-            i,z,d,a = row.wellid, row.elevation, row.case_diam, row.aquifer
+            i,z,d,a = row.wellid, flt(row.elevation), flt(row.case_diam), row.aquifer
             if not i in wids: 
                 continue
             
@@ -301,7 +306,7 @@ class  xsec_data_MNcwi(xsec_data_abc):
         
         logger.debug (f"A {len(self.dz_grade)}, {len(self.d_diameter)}, {len(self.d_aquifer)}" )     
         for row in dat['c4locs']:
-            i,z,d,a = row.wellid, row.elevation, row.case_diam, row.aquifer
+            i,z,d,a = row.wellid, flt(row.elevation), flt(row.case_diam), row.aquifer
             x,y = row.utme, row.utmn
             if not i in wids: 
                 continue
@@ -328,8 +333,8 @@ class  xsec_data_MNcwi(xsec_data_abc):
         #logger.debug (f"C {self.dmin}, {self.dmax}")     
         
         for row in dat['c4ix']:
-            i,c,b = row.wellid, row.case_depth, row.depth2bdrk 
-            p,d   = row.depth_comp, row.depth_drll 
+            i,c,b = row.wellid, flt(row.case_depth), flt(row.depth2bdrk) 
+            p,d   = flt(row.depth_comp), flt(row.depth_drll) 
             logger.debug (f"D {row}")
             if not i in wids: 
                 continue
@@ -349,9 +354,9 @@ class  xsec_data_MNcwi(xsec_data_abc):
         logger.debug (f"E {len(self.dz_casing)}, {len(self.dz_bot)}, {len(self.dz_bdrk)}")     
 
         for row in dat['c4locs']:
-            i,c,b = row.wellid, row.case_depth, row.depth2bdrk 
-            p,d   = row.depth_comp, row.depth_drll 
-            n,s   = row.swlcount, row.swlavgmeas
+            i,c,b = row.wellid, flt(row.case_depth), flt(row.depth2bdrk) 
+            p,d   = flt(row.depth_comp), flt(row.depth_drll) 
+            n,s   = row.swlcount, flt(row.swlavgmeas)
             
             if not i in wids: 
                 continue
@@ -376,8 +381,8 @@ class  xsec_data_MNcwi(xsec_data_abc):
         # Table c4c1:
         # wellid, ohtopfeet, ohbotfeet, dropp_len, hydrofrac,  hffrom,  hfto  
         for row in dat['c4c1']:
-            i, t,b  = row.wellid, row.ohtopfeet, row.ohbotfeet   
-            p, h,ht,hb = row.dropp_len, row.hydrofrac, row.hffrom, row.hfto
+            i, t,b  = row.wellid, flt(row.ohtopfeet), flt(row.ohbotfeet)   
+            p, h,ht,hb = flt(row.dropp_len), row.hydrofrac, flt(row.hffrom), flt(row.hfto)
             
 #             if not i in Z: continue
             d = D.get(i,None)
@@ -408,9 +413,9 @@ class  xsec_data_MNcwi(xsec_data_abc):
         #    screen: (diamter, top, bottom, slot, length)
         #
         for row in dat['c4c2']:
-            i,constype, d = row.wellid, row.constype, row.diameter
-            t,b, s,l  = row.from_depth, row.to_depth, row.slot, row.length
-            m,a,u     = row.material, row.amount, row.units
+            i,constype, d = row.wellid, row.constype, flt(row.diameter)
+            t,b, s,l  = flt(row.from_depth), flt(row.to_depth), flt(row.slot), flt(row.length)
+            m,a,u     = row.material, flt(row.amount), row.units
 #             if not i in Z: continue
             label = self.d_label[i]
 
@@ -446,7 +451,7 @@ class  xsec_data_MNcwi(xsec_data_abc):
         # Table c5st
         # One well can have multiple strat layers.
         for row in dat['c4st']:
-            i, t,b  = row.wellid, row.depth_top, row.depth_bot 
+            i, t,b  = row.wellid, flt(row.depth_top), flt(row.depth_bot) 
             r,c,h,s = row.drllr_desc, row.color, row.hardness, row.strat  
             l1,l2,lm = row.lith_prim, row.lith_sec, row.lith_minor
             
@@ -474,7 +479,8 @@ if __name__=='__main__':
         muns = '200852'
         commandline =  f"-i {muns}"
         cmds = xsec_parse_args(commandline.split())
-        D.read_database(cmds)
+        db_name="../../MNcwisqlite/db/MNcwi30.sqlite"
+        D.read_database([muns], db_name)
     print (D)
 
     print (r'\\\\\\\\\\ DONE - data cwi /////////////')

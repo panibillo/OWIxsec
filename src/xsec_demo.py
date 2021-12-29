@@ -36,7 +36,14 @@ def run_test(commandline, msg = '', verbose=False):
     # xsec_data.read_database. If db_name is not provided here, then the 
     # read_database() method should define it, or should import a database 
     # module that does, e.g. class c4db in cwi_db.py.
-    xsec =  Xsec_main(cmds, db_name="../demo_data/MNcwi_demo.sqlite")
+    #xsec =  Xsec_main(cmds, db_name="../demo_data/MNcwi_demo.sqlite")
+    import os
+    print( os.path.abspath("../MNcwisqlite/db/cwi30.sqlite"))
+    print( os.path.abspath("./"))
+    print( os.path.abspath("../"))
+    print( os.path.abspath("../../"))
+    print( os.path.abspath("../../MNcwisqlite/db/cwi30.sqlite"))
+    xsec =  Xsec_main(cmds, db_name="../../MNcwisqlite/db/MNcwi30.sqlite")
     
     if verbose: 
         print (f"Identifiers Used: {list(xsec.data.d_label.values())}")
