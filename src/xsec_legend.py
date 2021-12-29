@@ -30,8 +30,10 @@ import os
 import sqlite3 as sqlite
 import unittest
 
+# set the full pathname for the legend database
+LEGEND_DB = os.path.abspath(__file__).replace('src/xsec_legend.py','demo_data/xsec_legend.sqlite')  
+                        
 
-LEGEND_DB = '../demo_data/xsec_Legend.sqlite'
 
 
 def stratlegend(cur):
@@ -163,7 +165,14 @@ def gridlegend(cur, gridpart):
              'linestyle': '-'}
     return d    
 
+def check_legend_path():
+    assert os.path.exists(LEGEND_DB), f"not found: {LEGEND_DB}"
+    return LEGEND_DB
+
 def xsec_legends():
+    """
+    Initialize the dictionary of legend definitions from the legend database.
+    """ 
     con = sqlite.connect(LEGEND_DB)
     cur = con.cursor()
     d = {}

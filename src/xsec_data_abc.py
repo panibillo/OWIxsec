@@ -373,8 +373,8 @@ class xsec_data_abc(abc.ABC):
                 rv.append (f"  {n:<9s}:")
                 for v in d[wid]:
                     rv.append (f"{' ':13}{str(v)}")
-        rv.append(f"zlims(min,max) = {self.zlims}")
-        rv.append(f"dlims(min,max) = {self.dlims}")
+        #rv.append(f"zlims(min,max) = {self.zlims}")
+        #rv.append(f"dlims(min,max) = {self.dlims}")
         rv.append(f"{63*'='}")
         return '\n'.join(rv)      
                           

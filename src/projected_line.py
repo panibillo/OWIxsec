@@ -122,7 +122,6 @@ def projected_section_line(d_xy, cmds): #orderedkeys=None, theta=None, max_del_t
         return singleton_section_line (d_xy, cmds)
 
     if  (cmds.userline is None) :
-        # and (cmds.userangle is None or cmds.userangle_constraint)):
         _, userangle = find_best_projected_ordering(d_xy, cmds)
         cmds.userangle = userangle
 
@@ -223,17 +222,21 @@ def find_best_projected_ordering(d_xy, cmds): #option='fenceline'):
         # logger.debug(f"    step {istep}    X = {X},  Y = {Y}, theta={np.degrees(theta)}, A={np.degrees(theta+angle0)}")
         try:
             p = np.polyfit(X, Y, 1)
-        except np.linalg.LinAlgError:
-            # Suppose we have tried to fit a vertical line
+        except:
+            # We suppose that numpy has thrown np.linalg.LinAlgError because 
+            # we have tried to fit a vertical line. But we cannot always catch
+            # that error by name. Under Python3.8, numpy 1.21.4, this produces
+            # a ValueError that is not reported using the normal error reporting
+            # mechanism, so we cannot catch it explicitly.
             if errcount >4:
                 break
             theta += nudge
             nudge = -nudge
             errcount += 1
-            continue
+            continue           
             
         f = np.poly1d(p)            # f is a linear polynomial
-        theta1 = np.arctan2(f(1),1)   # The slope of the line
+        theta1 = np.arctan2(f(1),1) # theta1 is slope of the line in rad from +x
         theta += theta1
         logger.debug(f"    step {istep}, dtheta={np.degrees(theta1):8.4f},  A={np.degrees(theta+angle0):8.4f}, theta={np.degrees(theta):5.4f}")
         if theta <= -angle_constraint:
@@ -246,15 +249,10 @@ def find_best_projected_ordering(d_xy, cmds): #option='fenceline'):
             break
         istep += 1    
 
-    # Recompute the ordering using the final angle theta
+    # Recompute the node ordering using the final angle theta
     X,Y = rotate(X0,Y0, -theta)
     ordered_wid = [wid[i] for i in np.argsort(X)]
     finaltheta = theta + angle0
-    # logger.debug(f"final rotated X = {X},  Y = {Y}")
-    # logger.debug(f"final rotated theta = {np.degrees(finaltheta)}")
-    # logger.debug(f"    step 8, dtheta=-0.5876,  A=-37.2431")
-    logger.debug(f"    exit                      A={np.degrees(finaltheta):8.4f}")
-    logger.debug(f"ordered_wid {ordered_wid}")
   
     return ordered_wid, finaltheta  
 

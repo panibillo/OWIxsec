@@ -1,3 +1,4 @@
+#!/bin/env python3
 '''
 Created on May 24, 2021
 
@@ -15,6 +16,7 @@ Remember that arguments must coincide with the xsec_data_<source> in use.
 
 from xsec_cl import xsec_parse_args
 from xsec_main import Xsec_main
+
 
 def run_test(commandline, msg = '', verbose=False):
     print ('Running Test:', msg)
@@ -153,6 +155,8 @@ def run_demo():
     return 0  
     
 if __name__=='__main__':
+    import xsec_legend
+    print (xsec_legend.check_legend_path())
     run_demo()
     
     print ('///////////////// That concludes xsec_demo script ///////////////////')    

@@ -125,3 +125,17 @@ class c4db(DB_SQLite):
         rv = f"c4db(db_name='{self.db_name}', commit={self.context_autocommit})" 
         return rv
 
+if __name__ == '__main__':
+    import os
+    print (os.path.abspath('../demo_data/MNcwi_demo.sqlite'))
+    db = c4db(db_name = '../demo_data/MNcwi_demo.sqlite', open_db=True)  
+    s = "select tbl_name from sqlite_master where type='table';"
+    data = db.cur.execute(s).fetchall()
+    for row in data:
+        s = f"select count(*) from {row[0]};"
+        n = db.cur.execute(s).fetchall()
+        print (f"  {row[0]} :{n[0][0]:4} records")
+    print ('/////////// DONE ////////////')
+    
+    
+    
