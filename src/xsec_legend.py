@@ -30,11 +30,9 @@ import os
 import sqlite3 as sqlite
 import unittest
 
-# set the full pathname for the legend database
+# set the full pathname for the legend database 
+# Do it this odd way so that the file is found when called from QGIS environment.
 LEGEND_DB = os.path.abspath(__file__).replace('src/xsec_legend.py','demo_data/xsec_legend.sqlite')  
-                        
-
-
 
 def stratlegend(cur):
     ''' Read legend dict for strat layter 
@@ -169,11 +167,13 @@ def check_legend_path():
     assert os.path.exists(LEGEND_DB), f"not found: {LEGEND_DB}"
     return LEGEND_DB
 
-def xsec_legends():
+def xsec_legends(legend_db=None):
     """
     Initialize the dictionary of legend definitions from the legend database.
     """ 
-    con = sqlite.connect(LEGEND_DB)
+    if not legend_db:
+        legend_db = LEGEND_DB
+    con = sqlite.connect(legend_db)
     cur = con.cursor()
     d = {}
     d['stratlegend']    = stratlegend(cur)

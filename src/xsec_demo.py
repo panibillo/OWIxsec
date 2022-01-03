@@ -13,9 +13,16 @@ Remember that arguments must coincide with the xsec_data_<source> in use.
 
 @author: Bill
 '''
+import os
 
 from xsec_cl import xsec_parse_args
 from xsec_main import Xsec_main
+
+wells_db = os.path.abspath("../demo_data/MNcwi_demo.sqlite")
+assert os.path.exists(wells_db), wells_db
+
+legend_db = os.path.abspath("../demo_data/xsec_legend.sqlite")
+assert os.path.exists(legend_db), os.path.abspath(legend_db)
 
 
 def run_test(commandline, msg = '', verbose=False):
@@ -32,18 +39,13 @@ def run_test(commandline, msg = '', verbose=False):
             print (c)
         
     # To call Xsec_main from another python script, requires cmds as argument.
-    # db_name is optional. If db_name is provided here, it is passed through to 
-    # xsec_data.read_database. If db_name is not provided here, then the 
-    # read_database() method should define it, or should import a database 
+    # db_name and legend_db are optional. If db_name is provided, it is passed 
+    # through to xsec_data.read_database. If db_name is not provided here, then  
+    # the read_database() method should define it, or should import a database 
     # module that does, e.g. class c4db in cwi_db.py.
-    #xsec =  Xsec_main(cmds, db_name="../demo_data/MNcwi_demo.sqlite")
-    import os
-    print( os.path.abspath("../MNcwisqlite/db/cwi30.sqlite"))
-    print( os.path.abspath("./"))
-    print( os.path.abspath("../"))
-    print( os.path.abspath("../../"))
-    print( os.path.abspath("../../MNcwisqlite/db/cwi30.sqlite"))
-    xsec =  Xsec_main(cmds, db_name="../../MNcwisqlite/db/MNcwi30.sqlite")
+    # If legend_db is provided, it is passed through to xsec_legend.  If not
+    # provided, then LEGEND_DB declared at the top of xsec_legend.py is used.
+    xsec =  Xsec_main(cmds, db_name=wells_db, legend_db=legend_db)
     
     if verbose: 
         print (f"Identifiers Used: {list(xsec.data.d_label.values())}")

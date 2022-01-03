@@ -326,7 +326,7 @@ class Xsec_main():
             attributes into a GIS file for display there.
         
     """
-    def __init__(self, cmds, db_name=None):
+    def __init__(self, cmds, db_name=None, legend_db=None):
         ''' 
         Initialize the xsection wells and drawing choices. 
         
@@ -358,7 +358,7 @@ class Xsec_main():
         self.D = xsec_draw()
 
         # read the legends file
-        self.dlegend = xsec_legends()
+        self.dlegend = xsec_legends(legend_db=legend_db)
 
         # query for well xsec_data_MNcwi
         self.data = xsec_data()      
