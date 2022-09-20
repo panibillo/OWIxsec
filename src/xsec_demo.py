@@ -101,9 +101,10 @@ def testscreen():
     # commandline = '-i 461415'  # screened, singleton is selected automatically
     run_test(commandline, msg )       
     
-def testsingleton():
+def testsingleton(wellid='411888'):
     msg = 'singleton section 2'
-    commandline = '-i 509077'   # singleton is selected automatically
+    commandline = '-i {wellid}'   # singleton is selected automatically
+    commandline = '-i {wellid}'
     run_test(commandline, msg )   
 
 def test_noelevation1():
@@ -151,15 +152,16 @@ def run_demo():
     testprojected1()
     testhydrofrac1()
     testscreen()
-    testsingleton()
+    testsingleton(411888)
+    testsingleton(509077)
     test_noelevation1()  
     test_noelevation2()  
     test_noelevation3()  
     test_wells_located_on_vertical()
     test_compare_possible_duplicates()
     test_others()
-    
-    test_commandline_help()  # Execution terminates when help is called.
+    #
+    # test_commandline_help()  # Execution terminates when help is called.
  
     return 0  
     

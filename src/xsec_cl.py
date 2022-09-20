@@ -278,39 +278,40 @@ def process_cmds(cmds):
     return cmds
 
 def xsec_parse_args(args=None):
-#     """ 
-#     Process the command line. Entered from the command line or from a script.
-#     
-#     Returns
-#     -------
-#     cmds: a dictionary of xsec directives  
-#     
-#     Arguments
-#     ---------
-#     args : None, str, or list
-#         - None:   When calling from the command line, the arguments will be 
-#                   retrieved from the system by the parser.
-#         - str :   Command line string (when called from another script)
-#         - list:   Command line string converted to list of string values.
-#            
-#     Examples
-#     --------
-#     -   Run from the command line:
-#         > python <your_path>MNcwixsec\src\xsec_main.py -i 469382 -R T
-# 
-#     -   Run from another script or from the Python prompt:
-#             from xsec_main import Xsec_main
-#             from xsec_cl import xsec_parse_args
-#             command_line_args = "-i 469382 -R T"
-#         
-#         +   # Pass command_line_args as a string
-#             cmds = xsec_parse_args(command_line_args)
-#             xsec = Xsec_main(cmds)
-#     
-#         +   # Pass command_line_args as a list
-#             cmds = xsec_parse_args(command_line_args.split())
-#             xsec = Xsec_main(cmds)
-#     """
+    """
+    Process the command line. Entered from the command line or from a script.
+
+    Returns
+    -------
+    cmds: a dictionary of xsec directives  
+    
+    Arguments
+    ---------
+    args : None, str, or list
+        - None:   When calling from the command line, the arguments will be 
+                  retrieved from the system by the parser.
+        - str :   Command line string (when called from another script)
+        - list:   Command line string converted to list of string values.
+    
+    Examples
+    --------
+    -   Run from the command line:
+        > python <your_path>xsec_main.py -i 469382 -R T
+    
+    -   Run from another script or from the Python prompt:
+            from xsec_main import Xsec_main
+            from xsec_cl import xsec_parse_args
+            command_line_args = "-i 469382 -R T"
+    
+        +   # Pass command_line_args as a string
+            cmds = xsec_parse_args(command_line_args)
+            xsec = Xsec_main(cmds)
+    
+        +   # Pass command_line_args as a list
+            cmds = xsec_parse_args(command_line_args.split())
+            xsec = Xsec_main(cmds)
+    """
+    
     parser = xsec_parser()
     if args is None:
         # Handle a call from the command line

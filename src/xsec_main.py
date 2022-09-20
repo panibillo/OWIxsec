@@ -374,6 +374,7 @@ class Xsec_main():
 
         self.data.update_diameters()
         self.data.update_zelevations('E' in cmds.required)
+        self.data.update_grout_diameters('G' in cmds.includeonly)
 #         self.data.find_zlims()
         self.data.ensure_points_have_spread()
 
@@ -911,8 +912,10 @@ class Xsec_main():
             not provide sufficiently explict information on both the inner and
             outer diameters and vertical limits of each grout interval.  
         
-        o   The present code does not actually figure out which casing(s) or 
-            annular spaces can be shown as grouted. It simply uses the diameter
+        o   The present code guesses which casing(s) or annular spaces can be 
+            shown as grouted, see xsec_data_MNcw.py: update_grout_diameters(). 
+            It guesses that the grout is outside of the casing if the bottom
+            elevation of the grout is abover or equal to the casing. 
             stored in dlz_grout, which is read from c4c2, as the inner diamter,
             and makes a simple guess of the outer diameter.
         """
@@ -926,11 +929,16 @@ class Xsec_main():
                 uc = self.d_unodes[wid]
                 for g in self.data.dlz_grout[wid]:
                     logger.debug(str(g))
-                    d, ztop, zbot = g.d, g.ztop, g.zbot
+                    # d, ztop, zbot = g.d, g.ztop, g.zbot
+                    # m = g.material 
+                    # ri = self.rofd(d)
+                    # ro = ri + self.rofd(w)
+                    di,do, ztop, zbot = g.din, g.dout, g.ztop, g.zbot
                     m = g.material 
-                    ri = self.rofd(d)
-                    ro = ri + self.rofd(w)  
-                    logger.debug(f"draw grout: {wid}, {d}, {ri},{ro}, {ztop},{zbot}")
+                    ri = self.rofd(di)
+                    ro = self.rofd(do)
+  
+                    logger.debug(f"draw grout: {wid}, ({di},{do}), ({ri},{ro}), ({ztop},{zbot})")
                     r1,r2 = geometry_base.pairRectangles(uc, ri, ro, (zbot, ztop), zorder=2, **legend[m])
                     D.rect(r1)
                     D.rect(r2)
@@ -1271,8 +1279,12 @@ class Xsec_main():
         
     
 if __name__ == '__main__':
+    db_name = "/home/bill/data/MN/OWI/OWI40.sqlite"
     from xsec_cl import xsec_parse_args 
-    cmds = xsec_parse_args()
-    xsec = Xsec_main(cmds)
+    cmds = xsec_parse_args('-i 593637')
+    cmds = xsec_parse_args('-i 520048')
+#    cmds = xsec_parse_args('-i 509077')
+#    cmds = xsec_parse_args('-i 449114') #not working for grout
+    xsec = Xsec_main(cmds, db_name=db_name)
       
     print (r'\\\\\\\\\\\\ --DONE xsec_main -- //////////////')

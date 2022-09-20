@@ -59,7 +59,7 @@ wells_db = os.path.join(homedir, 'data/MN/OWI/OWI40.sqlite')
 print (os.path.abspath('.'))
 legend_db = None
 
-# Get the list of selected wellids from the seelected wells layer
+# Get the list of selected wellids from the selected wells layer
 flayer = iface.activeLayer()
 print (flayer)
 for f in flayer.selectedFeatures():

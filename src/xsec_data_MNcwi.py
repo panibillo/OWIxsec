@@ -435,7 +435,7 @@ class  xsec_data_MNcwi(xsec_data_abc):
             elif constype=='G' and isnum(b):
                 if t is None: t = 0
                 if b>t:
-                    self.dlz_grout[i].append(Grout(i,label, d, t, b, 
+                    self.dlz_grout[i].append(Grout(i,label, d,d, t, b, 
                                                    None, None, b-t, m, a, u ))
             
             # Hole: If From_depth is missing, assume it is at grade
@@ -468,6 +468,209 @@ class  xsec_data_MNcwi(xsec_data_abc):
         self.wids = tuple(wids)
         return (len(self.d_xy) > 0)
 
+    def getgroutdia(self, dgrout, dother, defaultdia):
+        """ 
+        If grout depth <= other depth, return other diameter, else default
+        """
+        try:
+            if dgrout.zbot >= dother.zbot and dother.d is not None:
+                return max(dother.d, defaultdia), True
+        except:
+            pass
+        return defaultdia, False
+        
+    def update_grout_diameters(self, g_required, default_annular_space=4, depthtol=1.02):
+        """
+        Guess the correct diameters to use for drawing grout intervals.
+        
+        CWI does not record the grout intervals, so we guess them.  
+        CWI records only construction grout intervals, so there is always an
+        inner diameter equal to the casing, and an outer diameter equal to the 
+        hole diameter. But we are not guaranteed that either or both of those 
+        are entered, so we also have to guess some defaults.
+        
+        default_annular_space = the hole diameter minus the casing diameter.
+        
+        if grout.zbot <= casing.zbot, then grout.id = casing.d
+        if grout.zbot <= hole.zbot, then grout.od = hole.d
+        
+        This logic is pretty tricky, and only slightly tested. Anticipate it 
+        may need revising, but be careful to not accidentally make it work for
+        incorrectly entered data.
+        
+        For each well:
+            Create a dict of grout depths
+            Add 2 lists to the dict for each grout depth: gdin and gdout
+            Add a casing dia to ldin if depth_bot is within tol% of grout depth_bot.
+            Add a hole dia to ldout if depth_bot is within tol% of grout depth_bot.
+            Also create two generic lists wdin and wdout that are just lists of
+            all inner (casing) and outer (hole) diameters for the well.
+            
+            Create lists of inner (casing) and outer (hole) diameters, together 
+            with their maximum depths.
+            For each grout, 
+               for each casing depth from deepest to shallowest:
+                  if the grout.depth_bot < 1.tol*casing_depth:
+                     then grout.din=casing.d, and break.
+               for each hole.depth_bot from deepest to shallowest:
+                  if the grout.depth_bot < 1.tol*hole.depth_bot:
+                     if hole.d > grout.din+2
+                         grout.dout  = hole.d
+                     else grout.dout = grout.din + default
+         
+        Some useful examples to try:
+        520048, 509077, 
+        no z: 449114
+        poor data: 411888
+        """
+        if not g_required:
+            return
+        
+       
+        for wid in self.wids:
+            # Build temporary lists of [depth, dia] for casings and holes 
+            lin, lout = [],[]
+            c,h = [],[]
+            for dc in self.dlz_casing2.get(wid,[]):
+                lin.append([dc.depth_bot*depthtol, dc.d])
+                c.append(dc.d)
+            for dh in self.dlz_hole.get(wid,[]):
+                lout.append([dh.depth_bot*depthtol, dh.d])
+                h.append(dh.d)
+
+            if lin:
+                lin.sort(reverse=True)  
+                dinmin = lin[0][1]
+            else:
+                dinmin = self.default_display_diameter
+                
+            if lout:
+                lout.sort() 
+                doutmin = lout[0][1]
+            else:
+                doutmin = dinmin + default_annular_space
+            diffs = {}
+            if len(c) >= 2:
+                c.sort()
+                diffs.update( {d:(e-d) for d,e in zip(c[:-1], c[1:]) })
+            print (101, diffs.items(), c)
+            if len(h) >= 2:
+                h.sort()
+                diffs.update( {d:(e-d) for d,e in zip(h[:-1], h[1:]) })
+            print (202, diffs.items(), h)
+
+                 
+            diffmin = 2 #min(doutmin-dinmin, default_annular_space)
+                
+            print ('lin: ' ,lin)
+            print ('lout: ',lout)
+            print ('dmins:', dinmin, doutmin, diffmin)
+            
+            for dg in reversed(self.dlz_grout.get(wid, [])):                
+                print (f"A   G.bot={dg.depth_bot:5.1f}", end='')
+                dg.din, dg.dout = dinmin, doutmin
+                print (f", ({dg.din:4.1f}, {dg.dout:4.1f})" )
+                for rec in reversed(lin):
+                    if dg.depth_bot <= rec[0]:
+                        dg.din = rec[1]
+                        dg.dout = dg.din + diffs.get(dg.din, default_annular_space)
+                        print (f" i   Cbot {rec[0]:4.1f}, ({dg.din:4.1f},{dg.dout:4.1f})" )
+                        break
+                    else:
+                        print (f" ix       {rec[0]:4.1f}" )
+                # for rec in lout:
+                #     if dg.depth_bot <= rec[0]:
+                #         dg.dout = rec[1]
+                #         print (f" o  {rec[0]:4.1f}, ({dg.din:4.1f},{dg.dout:4.1f})" )
+                #         break
+                #     else:
+                #         print (f" ox {rec[0]:4.1f}" )
+                # dg.dout = max(dg.dout, dg.din + diffmin) 
+                print (f"   *{diffmin:4.1f}, ({dg.din:4.1f},{dg.dout:4.1f})" )
+                
+                # try:
+                #     dg.din = self.dz_casing[wid].d
+                #     print (f"C.d={dg.din:4.1f}", end='')
+                # except:
+                #     try:
+                #         dg.din = self.dz_openhole[wid].d
+                #         print (f"H.d={dg.din:4.1f}", end='')
+                #     except:
+                #         dg.din = self.default_display_diameter
+                #         print (f"x.d={dg.din:4.1f}", end='')
+                # dg.dout = dg.din + default_annular_space
+                # print (f", ({dg.din:4.1f}, {dg.dout:4.1f})" )
+                #
+                # for dc in reversed(self.dlz_casing2.get(wid, [])):
+                #     dg.din, found = self.getgroutdia(dg, dc, dg.din)
+                #     dg.dout = dg.din + default_annular_space 
+                #     print (f" c  C.bot={dc.zbot:5.1f}, C.d={dc.d:4.1f}, ({dg.din:4.1f},{dg.dout:4.1f})", found )
+                #     if found: break  
+                #
+                # for dh in self.dlz_hole.get(wid, []):
+                #     dg.dout, found = self.getgroutdia(dg, dh, dg.dout)
+                #     print (f"  h H.bot={dh.zbot:5.1f}, H.d={dh.d:4.1f}, ({dg.din:4.1f},{dg.dout:4.1f})", found)
+                #     if found: break
+            
+            for dg in self.dlz_grout.get(wid, []): 
+                print (f"{wid}: {dg.depth_bot:5.1f} = [{dg.din:4.1f} - {dg.dout:4.1f}]")
+
+
+    def update_grout_diameters1(self, g_required, default_annular_space=4):
+        """
+        Guess the correct diameters to use for drawing grout intervals.
+        
+        CWI does not record the grout intervals, so we guess them.  
+        CWI records only construction grout intervals, so there is always an
+        inner diameter equal to the casing, and an outer diameter equal to the 
+        hole diameter. But we are not guaranteed that either or both of those 
+        are entered, so we also have to guess some defaults.
+        
+        default_annular_space = the hole diameter minus the casing diameter.
+        
+        if grout.zbot <= casing.zbot, then grout.id = casing.d
+        if grout.zbot <= hole.zbot, then grout.od = hole.d
+        
+        This logic is pretty tricky, and only slightly tested. Anticipate it 
+        may need revising, but be careful to not accidentally make it work for
+        incorrectly entered data.
+        
+        Some useful examples to try:
+        520048, 509077, 
+        no z: 449114
+        poor data: 411888
+        """
+        if not g_required:
+            return
+        
+        for wid in self.wids:
+            for dg in reversed(self.dlz_grout.get(wid, [])):
+                print (f"A   G.bot={dg.zbot:5.1f}, ", end='')
+                
+                try:
+                    dg.din = self.dz_casing[wid].d
+                    print (f"C.d={dg.din:4.1f}", end='')
+                except:
+                    try:
+                        dg.din = self.dz_openhole[wid].d
+                        print (f"H.d={dg.din:4.1f}", end='')
+                    except:
+                        dg.din = self.default_display_diameter
+                        print (f"x.d={dg.din:4.1f}", end='')
+                dg.dout = dg.din + default_annular_space
+                print (f", ({dg.din:4.1f}, {dg.dout:4.1f})" )
+                    
+                for dc in reversed(self.dlz_casing2.get(wid, [])):
+                    dg.din, found = self.getgroutdia(dg, dc, dg.din)
+                    dg.dout = dg.din + default_annular_space 
+                    print (f" c  C.bot={dc.zbot:5.1f}, C.d={dc.d:4.1f}, ({dg.din:4.1f},{dg.dout:4.1f})", found )
+                    if found: break  
+                           
+                for dh in self.dlz_hole.get(wid, []):
+                    dg.dout, found = self.getgroutdia(dg, dh, dg.dout)
+                    print (f"  h H.bot={dh.zbot:5.1f}, H.d={dh.d:4.1f}, ({dg.din:4.1f},{dg.dout:4.1f})", found)
+                    if found: break
+        
     
 if __name__=='__main__':
     from xsec_cl import xsec_parse_args
@@ -475,11 +678,12 @@ if __name__=='__main__':
     if 1:
         D = xsec_data_MNcwi()
         muns = '0000195748 0000200828 0000200830 0000233511 524756 0000200852 0000207269 0000509077'
-        muns = '0000200852 0000207269' 
-        muns = '200852'
+        #muns = '0000200852 0000207269' 
+        #muns = '200852'
         commandline =  f"-i {muns}"
         cmds = xsec_parse_args(commandline.split())
         db_name="../../MNcwisqlite/db/MNcwi30.sqlite"
+        db_name = "/home/bill/data/MN/OWI/OWI40.sqlite"
         D.read_database([muns], db_name)
     print (D)
 

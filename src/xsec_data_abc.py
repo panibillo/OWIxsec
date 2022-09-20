@@ -39,27 +39,33 @@ o   Your read_database() method should perform the following steps in order:
     5   Call self.ensure_points_have_spread
     6   Return True if data remains, or False if there is nothing to draw.
 
-o   xsec_data_abc implements 3 methods do not need to be overridden.  These 
+o   xsec_data_abc implements 3 methods that do not need to be overridden.  These 
     methods should be the same for all concrete classes that inherit the abc.
     +   __init__()
     +   __str__()
     +   ensure_points_have_spread()    
 
+o   xsec_data stores the x,y coordinates in a namedtuple.
+    -   A namedtuple must be initialized with a complete, and correcty ordered, 
+        set of values. e.g.:
+        +   d[wid] = Coord(x,y)
+    -   A namedtuple is immutable, but can be updated using method ._replace()
+
 o   xsec_data stores data in value dictionaries and component dictionaries.
     +   Value dictionaries store a single value for each entry.  The values may
         be used for one or more drawing components.
-    +   Component dictionaries store namedtuple's describing a particular 
-        well component or drawing element.  namedtuples are used so that the  
+    +   Component dictionaries store dataclass'es describing a particular 
+        well component or drawing element.  dataclasses are used so that the  
         modules can reference values explicitly by the variable names rather 
         than by index numbers.
 
     +   All dictionaries use the same keys. The keys are unique well record 
-        identifiers, such as the database relation identifier, or a Unique Well 
+        identifiers, such as the database relational identifier, or a Unique Well 
         Number (with limitations). The index is commonly referred to as "wid" or 
         "i" in all xsec python modules.
     
 o   Notes on using namedtuple's
-    -   A namedtuple must be initialized with a complete, and correcty ordered, 
+    -   A dataclasses must be initialized with a complete, and correcty ordered, 
         set of values. e.g.:
         +   d[wid] = Coord(x,y)
         +   d[wid] = Label(*row)  # where row is a complete tuple of values
@@ -155,7 +161,8 @@ class Droppipe(z_updater):
 class Grout(z_updater):
     wid : int
     label : str
-    d : float
+    din : float
+    dout : float
     depth_top : float
     depth_bot : float
     ztop : float
@@ -264,14 +271,22 @@ class xsec_data_abc(abc.ABC):
         type, but are anticipated to be strings or numbers.
 
     o   The component dictionaries are all indexed by wid. 
+    
+    o   The component dictionary variables are named:  (see descriptions later)
+        -    d_<item>    items do not include a z value
+        -    dz_<item>   items include a z value(s)
+        -    dlz_<item>  items are lists of entries (that include z value(s))
 
-    o   Components that can have only one value per well, such as location 
+    o   The items are either single values or instances of a dataclass.
+        Except Coord which is a namedtuple.
+         
+    o   Well components that can have only one value per well, such as location 
         or total depth, are kept in single level dictionaries named either
         d_<item> or dz_<item>.  The 'z' in 'dz_' is a reminder that the 
         attributes include depths, and that the depths have been expressed as
         elevations (z).
 
-    o   Components that can have multiple entries per well, such as casing
+    o   Well components that can have multiple entries per well, such as casing
         or grout, are kept in 2-level dictionaries named dlz_<item>. The 
         second level is a list of the entries.  The 'l' in 'dlz_' is a reminder
         that the dictionary values are lists of entries.
@@ -711,7 +726,7 @@ class xsec_data_abc(abc.ABC):
                     for dc in dz[wid]:
                         dc.updatez(z)
                         self._update_zminmax(dc.zbot)
-                        
+            
         self.zlims = [self.zmin, self.zmax]     
      
             
@@ -760,7 +775,7 @@ class xsec_data_abc(abc.ABC):
             for dlz in (self.dlz_casing2,
                        self.dlz_screen,
                        self.dlz_hole,
-                       self.dlz_grout):
+                       ):
                 for dc in dlz.get(wid, []):
                     if dc.d:
                         diameter = dc.d
