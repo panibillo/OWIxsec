@@ -1,8 +1,8 @@
 /* 
-Definition of database tables defining legends for the MNcwixsec Well Cross-section drawing program.
+Definition of database tables defining legends for the OWIxsec Well Cross-section drawing program.
 Attributes correspond with plotting attributes in Python's Matplotlib package.
 
-Tables are incomplete, but sufficient for running MNcwixsec demonstration scripts. 
+Tables are incomplete, but sufficient for running OWIxsec demonstration scripts. 
 For the demonstration, the legend database should be named "demo_data/xsec_Legend.sqlite"
 
 Author: Bill Olsen

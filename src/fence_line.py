@@ -28,7 +28,7 @@ def score_swapM(a,b,c,d, d_xy):
     
     Arguments
     ---------
-    a,b,c: dictionary keys
+    a,b,c,d: dictionary keys
         Identifiers of points in dictionary d_xy.    
         
     d_xy : dictionary of points on the line
@@ -39,16 +39,14 @@ def score_swapM(a,b,c,d, d_xy):
     Change_in_length : float
         The change is the new total length minus the original total length. 
         
-    swapped_indices : tuple of 2 integers.
+    target_indices : tuple of dictionary keys (b, c).
     
     Notes
     -----
-    -   The swap tried is between points b and c. Points a and d do not move.
-    -   The original total length is ab + bc + cd 
-    -   The new total length is ac + cb + bd.
-    -   But bc=cb, so the net change is just (ac+bd) - (ab + bc). 
-    -   A positive number means that swapping b and c results in a greater
-        total length
+    -   Compares path length a-b-c-d to path length a-c-b-d.
+    -   Note that lengths b-c and c-b are the same, so the change in total path
+        length is equal to (ac + bd) - (ab + cd) 
+    -   A negative result means that swapping b and c reduces the total length
     """
     ab = hypot_p(d_xy[a], d_xy[b])
     cd = hypot_p(d_xy[c], d_xy[d])
@@ -63,9 +61,8 @@ def score_swapE(b,c,d, d_xy):
     
     Arguments
     ---------
-    b,c,d: dictionary keys
-        Identifiers of points in dictionary d_xy. a should be an end-point, b  
-        should be an end-point.
+    a,c,d: dictionary keys
+        Identifiers of points in dictionary d_xy. a should be an end-point 
         
     d_xy : dictionary of points on the line
         values are 2-tuples of (x,y) coordinates
@@ -79,7 +76,8 @@ def score_swapE(b,c,d, d_xy):
 
     Notes
     -----
-    -   Index b should be an end point. The swap tried is between b and c. Point
+    
+    -   Index a should be an end point. The swap tried is between b and c. Point
         d does not move.
     -   The original total length is  bc + cd
     -   The new total length is cb + bd 
@@ -141,8 +139,8 @@ def fenceline_smooth(d_xy, ordered_wids):
     P = [d_xy[k] for k in K]
     Q = tuple(P)
     if N == 3:
-        # This case does not work in the general algorithm, and nees only 2 trys
-        dL1,swap_pair1 = score_swapE(0,1,2, Q)
+        # This case does not work in the general algorithm, and needs only 2 trys
+        dL1,  = score_swapE(0,1,2, Q)
         dL2,swap_pair2 = score_swapE(2,1,0, Q)
         if dL1 < 0 and dL1 < dL2:
             K[0],K[1] = K[1],K[0]

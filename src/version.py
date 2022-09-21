@@ -24,6 +24,13 @@ Version 0.3  2021-11-09
     Many bug fixes.
     Re-initialized git repo under the new name, deleting prior version istory.
     
+Version 0.4  2022-09-20
+    Project name changed again, from "MNcwixsec" to "OWIxsec", reflecting its
+    common origin with project OWI.
+    Grout interval is given better logic for finding inner and outer diameter
+    of grout intervals. Both inner and outer diameters are not given explicitly
+    in the OWI database, nor in the Minnesota CWI database that OWI is based on.
+    
 @author: Bill Olsen
 '''
 

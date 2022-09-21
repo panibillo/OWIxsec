@@ -280,7 +280,7 @@ from projected_line import projected_section_line, update_projection_line_nodes
 import geometry_base  
 
 # Select the data source module and import it as xsec_data.
-from xsec_data_MNcwi import xsec_data_MNcwi as xsec_data
+from xsec_data_OWI import xsec_data_OWI as xsec_data
 
 # import an ouput drawing and publishing module as xsec_draw
 from xsec_draw_plt import xsec_draw
@@ -300,7 +300,7 @@ class Xsec_main():
     -----
     o   The main module orchestrates the entire drawing process.  
     
-        +   It delegates knowledge of the xsec_data_MNcwi source to the Data class.  
+        +   It delegates knowledge of the xsec_data_OWI source to the Data class.  
         
         +   It delegates building the drawing section_line to the section_line 
             module.
@@ -312,7 +312,7 @@ class Xsec_main():
         +   __init__() receives the parameter list describing the list of 
             wells and all of the drawing choices.
             
-        +   query() uses the Data class to fill internal xsec_data_MNcwi dictionaries.
+        +   query() uses the Data class to fill internal xsec_data_OWI dictionaries.
         
         +   layout() determines the overall drawing dimensions, sectionline
             section_line, well spacings along the section line, and finally the
@@ -326,7 +326,7 @@ class Xsec_main():
             attributes into a GIS file for display there.
         
     """
-    def __init__(self, cmds, db_name=None, legend_db=None):
+    def __init__(self, cmds, db_name=None, legend_db=None, msg=''):
         ''' 
         Initialize the xsection wells and drawing choices. 
         
@@ -360,7 +360,7 @@ class Xsec_main():
         # read the legends file
         self.dlegend = xsec_legends(legend_db=legend_db)
 
-        # query for well xsec_data_MNcwi
+        # query for well xsec_data_OWI
         self.data = xsec_data()      
         ok = self.data.read_database(cmds.identifiers, db_name=db_name)   
         if not ok:
@@ -383,7 +383,7 @@ class Xsec_main():
             
         
         # create the section line in world coordinates
-        # self.xsec_data_MNcwi.d_xy is a dict of xy coordinates by wid
+        # self.xsec_data_OWI.d_xy is a dict of xy coordinates by wid
         # cmds.userline is an ordered list of (x,y) tuples provided by the user
         if (cmds.sectionlinetype == 'singleton' or 
             len(self.data.wids) == 1 or
@@ -407,10 +407,10 @@ class Xsec_main():
 
         # create_gridlines (in world coordinates) 
         # Note that zlims returned are the limits of the gridlines, while
-        # xsec_data_MNcwi.zlims are the limits of the well components..
+        # xsec_data_OWI.zlims are the limits of the well components..
         self.zlims = self.determine_gridline_elevations()
                 
-        # Now the basic xsec_data_MNcwi preparation is completed and the cross section line
+        # Now the basic xsec_data_OWI preparation is completed and the cross section line
         # layout is known.  The legibility of the well drawings in cross section 
         # now depends on scaling factors a, b, and h that control how wide 
         # individual wells are to be drawn, and how close to each other they may
@@ -419,7 +419,7 @@ class Xsec_main():
         # factors, for example by building sliders into the interface. The entry
         # point to the code for changing the scaling is at the xsec_draw() method. 
         print ('call draw')
-        self.xsec_draw(a=3.0, b=4.0, h=3.5)
+        self.xsec_draw(a=3.0, b=4.0, h=3.5, msg=msg)
         if logging.root.level == logging.DEBUG:
             print (30*"=" + "  END of xsec_main   " + 30*"=")
     
@@ -472,7 +472,7 @@ class Xsec_main():
         
         return (gridbase, gridtop)  # zlims belonging to self.
                     
-    def xsec_draw(self, a=2.0, b=3.0, h=2.5):
+    def xsec_draw(self, a=2.0, b=3.0, h=2.5, msg=''):
         ''' 
         Adjust the xsec scaling factors, and draw the well elements. 
         
@@ -571,7 +571,7 @@ class Xsec_main():
         D.plot_Map  (self.data.d_xy, self.data.d_label,
                      self.sectionline, self.normals)
         
-        D.publish()
+        D.publish(title=msg)
                 
     def calculate_drawing_part_widths(self):
         ''' 
@@ -645,7 +645,7 @@ class Xsec_main():
         ---------
         a, b : float
             Scaling parameters: max diameter is scaled to 1/(a+bN) where N is 
-            the number of wells. N is obtained from self.xsec_data_MNcwi.  
+            the number of wells. N is obtained from self.xsec_data_OWI.  
             -   1/(a+b): maximum factor for scaling when N = 1
             -   1/(bN) : minimum factor when N >> 1
                 
@@ -683,7 +683,7 @@ class Xsec_main():
         # component diameter as drawn in the U dimensions.  
         # The scaling factor r_Rofd is derived as rho(d->R) in xsec_calc.pdf. 
         # Umlims are the left an right inner margins in U.
-        N = len(self.data.wids) #len(self.xsec_data_MNcwi.d_xy) 
+        N = len(self.data.wids) #len(self.xsec_data_OWI.d_xy) 
         (U0, U1) = self.Ulims 
         LU = U1-U0  
         dmax = self.data.dmax 
@@ -712,7 +712,7 @@ class Xsec_main():
 
         # Adjust Unodes so that no two nodes are closer than h*r_Rofd times the 
         # average max_diameter of the wells at either end of the segment.    
-        # The max diameters are given per node by xsec_data_MNcwi.d_maxdia[wid].
+        # The max diameters are given per node by xsec_data_OWI.d_maxdia[wid].
         # This is a non-trivial problem without a single best answer. We find a
         # simplified approximate solution, by first increasing each segment 
         # length to a fixed minimum length, which increases the overall length, 

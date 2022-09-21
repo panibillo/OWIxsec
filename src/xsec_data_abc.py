@@ -355,8 +355,8 @@ class xsec_data_abc(abc.ABC):
         
        
     def __str__(self):  
-        rv = [f"{25*'='}  xsec xsec_data_MNcwi  {25*'='}", 
-              f'xsec_data_MNcwi source = {self.datasource}']
+        rv = [f"{25*'='}  xsec xsec_data_OWI  {25*'='}", 
+              f'xsec_data_OWI source = {self.datasource}']
         if not self.datasource:
             return '\n'.join(rv)
         rv.append(f"There are {len(self.wids)} wells")
@@ -395,7 +395,7 @@ class xsec_data_abc(abc.ABC):
     @abc.abstractmethod
     def read_database(self, cmds):
         """ 
-        Retrieve & store well xsec_data_MNcwi required by class xsec_main for wells in identifiers
+        Retrieve & store well xsec_data_OWI required by class xsec_main for wells in identifiers
          
         Arguments
         ---------
@@ -405,30 +405,30 @@ class xsec_data_abc(abc.ABC):
          
         Returns
         -------
-        True  : if successful and xsec_data_MNcwi is likely to generate a valid section line, 
+        True  : if successful and xsec_data_OWI is likely to generate a valid section line, 
         False : if an error occurs
          
         Notes
         -------
-        This abstract base class defines the basic functions that return xsec_data_MNcwi
+        This abstract base class defines the basic functions that return xsec_data_OWI
         needed by the xsec drawing algorithms. Data requests are per well, using
         the wid. The wid is the unique well identifier used throughout. It might
         be a Unique Well Number, but is more likely a relational identifier.
          
         The concrete class that inherits this base class must:
-        -   Implement methods to query a xsec_data_MNcwi source, such as CWI, to obtain the  
-        required well xsec_data_MNcwi, given a list of wid values.
-        -   Store the xsec_data_MNcwi in Python dictionaries indexed by wid.  
+        -   Implement methods to query a xsec_data_OWI source, such as CWI, to obtain the  
+        required well xsec_data_OWI, given a list of wid values.
+        -   Store the xsec_data_OWI in Python dictionaries indexed by wid.  
          
         The functions defined here in the abstract base class illustrate what 
-        xsec_data_MNcwi is needed, and how it can be stored.  
+        xsec_data_OWI is needed, and how it can be stored.  
          
         The methods defined in this abstract base class assume that the vertical 
         coordinate information is stored as elevations above a common datum.
         A concrete implementation may  store the information in another manner 
         if it also overwrites these abstract methods.  A concrete implementation 
         may not need all of these methods, and is free to implement additional 
-        methods and xsec_data_MNcwi components.
+        methods and xsec_data_OWI components.
         """
         raise NotImplementedError
 

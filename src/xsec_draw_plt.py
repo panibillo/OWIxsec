@@ -67,6 +67,8 @@ class xsec_draw():
         logger.info("xsec_draw.__init__()")
         self.size = (6,8)
         self.fig, axs = plt.subplots(2,1)
+        # add a little room above the lower plot for a title
+        self.fig.tight_layout(pad=2.5) 
         self.axM = axs[0]  # map plot
         self.axX = axs[1]  # cross section plot
         self.axX.set_axisbelow(True)
@@ -209,10 +211,11 @@ class xsec_draw():
         '''
         self.axX.text(x,y, txt, **kwargs)
         
-    def publish(self): 
+    def publish(self, title=''): 
         '''
         This is where the output can be directed to the screen or to a file
         '''
+        if title: self.axX.set_title(title)
         self.axX.set_axisbelow(True)
         plt.show()  
 

@@ -1,4 +1,4 @@
-# MNcwixsec
+# OWIxsec
 
 A Python tool for drawing well cross sections using Minnesota CWI data 
 
@@ -35,7 +35,7 @@ The tool does not currently draw angled holes correctly.
 
 To use this tool, one needs to:
 * Set up a Python environment
-* Provide a data source (such as MNcwi `https://github.com/panibillo/MNcwi.git`)
+* Provide a data source (such as OWI `https://github.com/panibillo/OWI.git`)
 * Have a way of selecting well identifiers of interest
 * Choose your drawing control directives (command line options)
 * Call the tool.
@@ -64,7 +64,7 @@ Python libraries used include:
 
 * matplotlib
  
-* A data source. The provided data module `xsec_data_MNcwi.py` is written to use a local SQLite clone of the CWI database data tables.
+* A data source. The provided data module `xsec_data_OWI.py` is written to use a local SQLite clone of the CWI database data tables.
 
 * A legend source. The provided legend module `xsec_legend.py` is written to use a local SQLite databases to define the legends.  The provided legends are still quite limited, and are provided primarily for testing and demonstration.  The main limitations are a very limited set of stratigraphic codes, and unaesthetic or non-intuitive depictions of some well components.
 
@@ -78,19 +78,19 @@ This project has been tested on Windows 10 and with Python 3.7.
 
 * Download the project files from GitHub.  Open a git Bash window and navigate to the parent folder where you want to install it. Then on the Bash line enter:
 
-		git clone https://github.com/panibillo/MNcwixsec.git 
+		git clone https://github.com/panibillo/OWIxsec.git 
 
-That should create a folder named`MNcwixsec` with the project files inside of it.
+That should create a folder named`OWIxsec` with the project files inside of it.
 
 * Alternatively download the zip file from Github and unzip
 
-* You are reponsible for obtaining a data source.  If you are able to get instructions and credentials for downloading the Minnesota County Well Index data files, then a suitable data source can be built in SQLite using project MNcwi:
+* You are reponsible for obtaining a data source.  If you are able to get instructions and credentials for downloading the Minnesota County Well Index data files, then a suitable data source can be built in SQLite using project OWI:
 
-		github.com/panibillo/MNcwi.git 
+		github.com/panibillo/OWI.git 
 
 
 * Edit the script `xsec_data` to correctly point to your data source.  
-	* If the data source is an SQLite database created by MNcwi schema version 3, then the scripts should work as is.
+	* If the data source is an SQLite database created by OWI schema version 3, then the scripts should work as is.
 	* Otherwise you will have to study to code to see how to connect to a different data source, how to identify the wells, and how to obtain the needed data values.
 
 * Create legends for the drawing components.  The demo drawing module uses matplotlib, and the legends for the drawing components are defined in an SQLite database named `xsec_Legend.sqlite`.  The legends are designed only to make the components distinct to evaluate the demonstration; They are not particularly aesthetic or logical.  Only a handful of stratigraphic codes have been defined in the legend file.
@@ -99,12 +99,12 @@ That should create a folder named`MNcwixsec` with the project files inside of it
 
 ### Executing the program
 
-	> python <your_path>MNcwixsec\src\xsec_demo.py
-	> python <your_path>MNcwixsec\src\xsec_main.py -p -i 195748 200828 200830 -a 45 -R M
+	> python <your_path>OWIxsec\src\xsec_demo.py
+	> python <your_path>OWIxsec\src\xsec_main.py -p -i 195748 200828 200830 -a 45 -R M
 
 * You can run the demonstration script, `xsec_demo.py` from the command line:
 
-	> python <your_path>\MNcwixsec\src\xsec_demo.py
+	> python <your_path>\OWIxsec\src\xsec_demo.py
 
 * You can run the demonstration script, `xsec_demo.py` from within an IDE:
 
@@ -115,7 +115,7 @@ That should create a folder named`MNcwixsec` with the project files inside of it
 getting the help from the command line or from the Python prompt.  Of course
 you can also look at `xsec_cl.py`.
 
-	> python <your_path>\MNcwixsec\src\xsec_main.py -h
+	> python <your_path>\OWIxsec\src\xsec_main.py -h
 
 	>>> from xsec_cl import xsec_parse_args
 	>>> xsec_parse_args('-h')  
@@ -125,7 +125,7 @@ you can also look at `xsec_cl.py`.
 composing a command line, and pass it to `xsec_main.py` from the command 
 line, from within an IDE  or from another script. 
 
-	> python <your_path>MNcwixsec\src\xsec_main.py -p -i 195748 200828 200830 -a 45 -R M 
+	> python <your_path>OWIxsec\src\xsec_main.py -p -i 195748 200828 200830 -a 45 -R M 
 
 	>>> from xsec_main import xsec_Main
 	>>> xsec_Main('-p -i 195748 200828 200830 -a 45 -R M')   
@@ -136,7 +136,7 @@ line, from within an IDE  or from another script.
 -   A data source.  E.g. a database such as CWI or a local database.
 
     +   Create a module xsec_data_<your data source> that inherits from 
-        xsec_data_abc.  Use xsec_data_MNcwi.py as an example.
+        xsec_data_abc.  Use xsec_data_OWI.py as an example.
 
     +   The xsec_data module reads the source data into Python dictionaries 
         whose keys are well identifiers, and whos values are either scalars 

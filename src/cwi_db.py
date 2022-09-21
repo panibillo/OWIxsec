@@ -24,7 +24,18 @@ if __name__ == '__main__':
 logger.setLevel(logging.WARNING)
 
 class DB_context_manager():
-
+    """ 
+    A simple context manager mixin for opening and closing connections to a db.
+    
+    The db should support methods:
+        open_db()
+        commit_db()
+    The db should instantiate boolean variables:
+        context_connected : True when a connection and cursor exist
+        context_autocommit : True if db should be committed prior to closing 
+                             the connection.
+    """
+    
     def __init__(self, commit=False):    
         self.context_connected = False
         self.context_autocommit = commit
@@ -108,7 +119,7 @@ class DB_SQLite(DB_context_manager):
 
 class c4db(DB_SQLite): 
     def __init__(self, 
-                 db_name='.../MNcwisqlite/db/cwi30.sqlite',
+                 db_name='.../OWI/db/cwi30.sqlite',
                  open_db=False, commit=False):
         DB_SQLite.__init__(self, db_name, open_db=open_db, commit=commit)
         self.c4tables = 'c4ix c4ad c4c1 c4c2 c4id c4pl c4rm c4st c4wl c4locs'.split()
@@ -127,8 +138,8 @@ class c4db(DB_SQLite):
 
 if __name__ == '__main__':
     import os
-    print (os.path.abspath('../demo_data/MNcwi_demo.sqlite'))
-    db = c4db(db_name = '../demo_data/MNcwi_demo.sqlite', open_db=True)  
+    print (os.path.abspath('../demo_data/OWIxsec_demo.sqlite'))
+    db = c4db(db_name = '../demo_data/OWIxsec_demo.sqlite', open_db=True)  
     s = "select tbl_name from sqlite_master where type='table';"
     data = db.cur.execute(s).fetchall()
     for row in data:

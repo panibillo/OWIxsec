@@ -3,11 +3,11 @@
 Demonstration of running the xsec program for wells.
 
 Requirements:
-    The MNcwixsec scripts & data resources. 
+    The OWIxsec scripts & data resources. 
         Verify that the xsec_demo.py runs.
     This script should be in the same folder.
     An OWI.sqlite database 
-        (see https://github.com/panibillo/MNcwi.git)
+        (see https://github.com/panibillo/OWI.git)
         Edit variable wells_db below to point to this database,
     A legend database - as used by xsec_demo.py.
     A wells GIS layer.  
@@ -141,7 +141,7 @@ if caps & QgsVectorDataProvider.AddFeatures:
 #QgsProject.instance().addMapLayer(xlayer)
 #layers_names = [layer.name() for layer in QgsProject.instance().mapLayers().values()]
 #print(f"layers TOC = {layers_names}")
-#xsec =  Xsec_main(cmds, db_name="../demo_data/MNcwi_demo.sqlite")
+#xsec =  Xsec_main(cmds, db_name="../demo_data/OWI_demo.sqlite")
 
 
 

@@ -18,8 +18,8 @@ import os
 from xsec_cl import xsec_parse_args
 from xsec_main import Xsec_main
 
-wells_db = os.path.abspath("../demo_data/MNcwi_demo.sqlite")
-assert os.path.exists(wells_db), wells_db
+welldata_db = os.path.abspath("../demo_data/OWI_demo.sqlite")
+assert os.path.exists(welldata_db), f"{welldata_db} missing, it is not under version control"
 
 legend_db = os.path.abspath("../demo_data/xsec_legend.sqlite")
 assert os.path.exists(legend_db), os.path.abspath(legend_db)
@@ -45,7 +45,7 @@ def run_test(commandline, msg = '', verbose=False):
     # module that does, e.g. class c4db in cwi_db.py.
     # If legend_db is provided, it is passed through to xsec_legend.  If not
     # provided, then LEGEND_DB declared at the top of xsec_legend.py is used.
-    xsec =  Xsec_main(cmds, db_name=wells_db, legend_db=legend_db)
+    xsec =  Xsec_main(cmds, db_name=welldata_db, legend_db=legend_db, msg=msg)
     
     if verbose: 
         print (f"Identifiers Used: {list(xsec.data.d_label.values())}")
@@ -103,8 +103,8 @@ def testscreen():
     
 def testsingleton(wellid='411888'):
     msg = 'singleton section 2'
-    commandline = '-i {wellid}'   # singleton is selected automatically
-    commandline = '-i {wellid}'
+    commandline = f'-i {wellid}'   # singleton is selected automatically
+    commandline = f'-i {wellid}'
     run_test(commandline, msg )   
 
 def test_noelevation1():
@@ -152,7 +152,7 @@ def run_demo():
     testprojected1()
     testhydrofrac1()
     testscreen()
-    testsingleton(411888)
+    # testsingleton(411888)
     testsingleton(509077)
     test_noelevation1()  
     test_noelevation2()  

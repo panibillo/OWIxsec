@@ -4,7 +4,7 @@ and stratigraphic layers
 
 Classes
 -------
-xsec_data_MNcwi
+xsec_data_OWI
  
 
 Notes
@@ -34,7 +34,7 @@ import os
 from cwi_db import c4db
 from xsec_data_abc import * # xsec_data_abc, isnum
 import logging
-logger = logging.getLogger('xsec_data_MNcwi')
+logger = logging.getLogger('xsec_data_OWI')
 if __name__ == '__main__':
     logging.basicConfig(datefmt='%Y-%m-%d %H:%M:%S',
     format = '%(asctime)s - %(name)s:%(funcName)s:%(lineno)d - %(levelname)s -- %(message)s')
@@ -43,7 +43,7 @@ logger.setLevel(logging.INFO)
 def flt(x):
     try: return float(x)
     except: return x
-class  xsec_data_MNcwi(xsec_data_abc):  
+class  xsec_data_OWI(xsec_data_abc):  
     """
     Attributes
     ----------
@@ -676,14 +676,13 @@ if __name__=='__main__':
     from xsec_cl import xsec_parse_args
     
     if 1:
-        D = xsec_data_MNcwi()
+        D = xsec_data_OWI()
         muns = '0000195748 0000200828 0000200830 0000233511 524756 0000200852 0000207269 0000509077'
         #muns = '0000200852 0000207269' 
         #muns = '200852'
         commandline =  f"-i {muns}"
         cmds = xsec_parse_args(commandline.split())
-        db_name="../../MNcwisqlite/db/MNcwi30.sqlite"
-        db_name = "/home/bill/data/MN/OWI/OWI40.sqlite"
+        db_name = os.path.expanduser("~/data/MN/OWI/OWI40.sqlite")
         D.read_database([muns], db_name)
     print (D)
 

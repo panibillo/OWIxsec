@@ -3,9 +3,9 @@
 --
 -- Text encoding used: System
 --
--- Demo data for MNcwixsec.
--- Table definitions are derived from MNcwi schema version 3
---   (see  https://github.com/panibillo/MNcwi.git )
+-- Demo data for OWIxsec.
+-- Table definitions are derived from OWI schema version 3
+--   (see  https://github.com/panibillo/OWI.git )
 PRAGMA foreign_keys = off;
 BEGIN TRANSACTION;
 
