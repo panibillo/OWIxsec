@@ -211,13 +211,26 @@ class xsec_draw():
         '''
         self.axX.text(x,y, txt, **kwargs)
         
+    # def publish(self, title=''): 
+    #     '''
+    #     This is where the output can be directed to the screen or to a file
+    #     '''
+    #     if title: self.axX.set_title(title)
+    #     self.axX.set_axisbelow(True)
+    #     plt.show()  
+
     def publish(self, title=''): 
         '''
         This is where the output can be directed to the screen or to a file
         '''
-        if title: self.axX.set_title(title)
-        self.axX.set_axisbelow(True)
-        plt.show()  
+        if 0:
+            if title: self.axX.set_title(title)
+            self.axX.set_axisbelow(True)
+            plt.show()  
+        else:
+            from QTguitest import XsecWindow
+            M = XsecWindow(plt=plt)
+
 
 class Test(unittest.TestCase):
     

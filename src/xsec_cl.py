@@ -335,34 +335,38 @@ if __name__ == '__main__':
     """
     # Pick a test from the list (H, A-E):
     test = 'G'
+    for test in 'ABCDEFGH':
+        if test == '?':
+            args = '-h'
     
-    if test == 'A':
-        args = '-i 123456 -X B'
+        elif test == 'A':
+            args = '-i 123456 -X B'
         
-    elif test == 'B':
-        args = '-f -i 123456 223456 -X C -R E'
+        elif test == 'B':
+            args = '-f -i 123456 223456 -X C -R E'
+            
+        elif test == 'C':
+            args = '-p -i 123456 223456 -I F -r E'
+            
+        elif test == 'D':
+            args = '-i 123456 223456 -a 36 -A 10'
+            
+        elif test == 'E':
+            args = '-i 123456 223456 -l 0 0 100 0'.split()
         
-    elif test == 'C':
-        args = '-p -i 123456 223456 -I F -r E'
-        
-    elif test == 'D':
-        args = '-i 123456 223456 -a 36 A 10'
-        
-    elif test == 'E':
-        args = '-i 123456 223456 -l 0 0 100 0'.split()
+        elif test == 'F':
+            args = '-i 123456 -a 120'
     
-    elif test == 'F':
-        args = '-i 123456 -a 120'
-
-    elif test == 'G':
-        args = '-i 123456 -a 120 -A 20'
-
-    elif test == 'H':
-        xsec_parse_args('-h')
-
-    cmds = xsec_parse_args(args)
-    print (f"Test {test}, args=", args)
-    for c in cmds._get_kwargs():
-        print (c)
+        elif test == 'G':
+            args = '-i 123456 -a 120 -A 20'
+    
+        elif test == 'H':
+            xsec_parse_args('-h')
+            continue
+        
+        cmds = xsec_parse_args(args)
+        print (f"Test {test}, args=", args)
+        for c in cmds._get_kwargs():
+            print (c)
         
     print ('///////////////// That concludes xsec_cl script ///////////////////')    

@@ -18,12 +18,34 @@ import os
 from xsec_cl import xsec_parse_args
 from xsec_main import Xsec_main
 
-welldata_db = os.path.abspath("../demo_data/OWI_demo.sqlite")
-assert os.path.exists(welldata_db), f"{welldata_db} missing, it is not under version control"
+DEMO_WELLDB = os.path.abspath("../demo_data/OWI_demo.sqlite")
+DEMO_LEGENDDB = os.path.abspath("../demo_data/xsec_legend.sqlite")
 
-legend_db = os.path.abspath("../demo_data/xsec_legend.sqlite")
-assert os.path.exists(legend_db), os.path.abspath(legend_db)
+def create_demo_dbs():
+    """
+    Create the demo databases from the sql statements supplied in the demo directory.
 
+    The database files should be completely deleted before running.
+    """
+    if not os.path.exists(DEMO_WELLDB):
+        create_source(DEMO_WELLDB, (
+            os.path.abspath("../demo_data/cwischema_c4.3.0.sql"), # DDL statements
+            os.path.abspath("../demo_data/OWIxsec_demo_data.sql") # Demo data
+            ))
+    
+    if not os.path.exists(DEMO_LEGENDDB):
+        create_source(DEMO_LEGENDDB, (    
+            os.path.abspath("../demo_data/xsec_legend_DDL.sql"), # DDL statements
+            os.path.abspath("../demo_data/xsec_legend_data.sql") # Demo data
+            ))
+
+def create_source(db_name, sqlfiles):
+    from cwi_db import c4db, execute_statements_from_file
+    with c4db(db_name=db_name) as db:
+        for fname in (sqlfiles):
+            print (f"Reading {fname}")
+            execute_statements_from_file(db, fname)
+            db.con.commit()
 
 def run_test(commandline, msg = '', verbose=False):
     print ('Running Test:', msg)
@@ -45,7 +67,7 @@ def run_test(commandline, msg = '', verbose=False):
     # module that does, e.g. class c4db in cwi_db.py.
     # If legend_db is provided, it is passed through to xsec_legend.  If not
     # provided, then LEGEND_DB declared at the top of xsec_legend.py is used.
-    xsec =  Xsec_main(cmds, db_name=welldata_db, legend_db=legend_db, msg=msg)
+    xsec =  Xsec_main(cmds, db_name=DEMO_WELLDB, legend_db=DEMO_LEGENDDB, msg=msg)
     
     if verbose: 
         print (f"Identifiers Used: {list(xsec.data.d_label.values())}")
@@ -166,6 +188,7 @@ def run_demo():
     return 0  
     
 if __name__=='__main__':
+    create_demo_dbs()
     import xsec_legend
     print (xsec_legend.check_legend_path())
     run_demo()
