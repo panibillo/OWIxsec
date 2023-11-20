@@ -1,6 +1,8 @@
 '''
 Created on Oct 28, 2022
 
+Not yet working.
+
 Purpose of this unit is to demo embedding the matplotlib graphic output in a 
 QT gui.  This elementary demo is boilerplate copied from:
     https://www.pythonguis.com/tutorials/plotting-matplotlib/
@@ -28,7 +30,7 @@ class MplCanvas(FigureCanvasQTAgg):
 class XsecWindow(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
-        super(MainWindow, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Create the maptlotlib FigureCanvas object,
         # which defines a single set of axes as self.axes.
@@ -41,7 +43,7 @@ class XsecWindow(QtWidgets.QMainWindow):
 class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
-        super(MainWindow, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Create the maptlotlib FigureCanvas object,
         # which defines a single set of axes as self.axes.
@@ -55,3 +57,5 @@ class MainWindow(QtWidgets.QMainWindow):
 app = QtWidgets.QApplication(sys.argv)
 w = MainWindow()
 app.exec_()
+
+

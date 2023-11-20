@@ -223,7 +223,7 @@ class xsec_draw():
         '''
         This is where the output can be directed to the screen or to a file
         '''
-        if 0:
+        if 1:
             if title: self.axX.set_title(title)
             self.axX.set_axisbelow(True)
             plt.show()  

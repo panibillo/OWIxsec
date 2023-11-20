@@ -5,7 +5,11 @@ classes
 -------
 xsec_data_abc
 
-namedtuples
+namedtuple objects
+----------
+Coord
+
+dataclass objects
 -----------
 Casing
 Openhole
@@ -54,24 +58,27 @@ o   xsec_data stores the x,y coordinates in a namedtuple.
 o   xsec_data stores data in value dictionaries and component dictionaries.
     +   Value dictionaries store a single value for each entry.  The values may
         be used for one or more drawing components.
-    +   Component dictionaries store dataclass'es describing a particular 
+    +   Component dictionaries store dataclasses that each describe a particular 
         well component or drawing element.  dataclasses are used so that the  
         modules can reference values explicitly by the variable names rather 
-        than by index numbers.
+        than by index numbers.  
 
     +   All dictionaries use the same keys. The keys are unique well record 
         identifiers, such as the database relational identifier, or a Unique Well 
         Number (with limitations). The index is commonly referred to as "wid" or 
         "i" in all xsec python modules.
     
-o   Notes on using namedtuple's
-    -   A dataclasses must be initialized with a complete, and correcty ordered, 
+o   Notes on using dataclass and namedtuple
+    -   Individual variables in a dataclass object are mutable.
+    -   A dataclass definition can inherit from a class containing methods on
+        the dataclass named members.
+    -   A dataclass must be initialized with a complete, and correcty ordered, 
         set of values. e.g.:
         +   d[wid] = Coord(x,y)
-        +   d[wid] = Label(*row)  # where row is a complete tuple of values
+        +   d[wid] = Coord(*row)  # where row is a complete tuple of values
     
     -   A namedtuple is immutable, but can be updated using method ._replace()
-        which takes on or more keyword arguments. e.g.
+        which takes one or more keyword arguments. e.g.
         +   NT = NT._replace(diameter=12) o
         +   NT = NT._replace(**{'diameter':12})
 
@@ -107,7 +114,7 @@ import unittest
 def isnum(n):
     """ Return True if n is a number, else False """
     try:
-        y = n+1
+        y = n+1 # Triggers an exception when y is not a numeric type.
         return True
     except:
         return False
@@ -308,52 +315,29 @@ class xsec_data_abc(abc.ABC):
         self.wids = []
         
         # These dictionarys have one value or one namedtuple for each wid.
-        self.d_label    = dict() #{wid : well_label,...}
-        self.d_iwid     = dict() #{identifier : wid... }
-        self.d_xy       = dict() #{wid : Coord,...     }
-        self.d_aquifer  = dict() #{wid : aquifer,...   }
-        self.dz_grade   = dict() #{wid : grade elevation,...}
-        self.d_diameter = dict() #{wid : inner diameter,...}
-        self.d_maxdia   = dict() #{wid : maximum well part diameter,...}
-        self.dz_bot     = dict() #{wid : well bottom elev, ...}
-        self.dz_swl     = dict() #{wid : static water level, ...}
-        self.dz_bdrk    = dict() #{wid : bedrock elevation, }
-        self.dz_casing  = dict() #{wid : casing bottom elev, ... }
-        self.dz_openhole= dict() #{wid : Openhole(),... }
-        self.dz_droppipe= dict() #{wid : Droppipe(),... }
+        self.d_label      = dict() #{wid : well_label,...}
+        self.d_iwid       = dict() #{identifier : wid... }
+        self.d_xy         = dict() #{wid : Coord,...     }
+        self.d_aquifer    = dict() #{wid : aquifer,...   }
+        self.dz_grade     = dict() #{wid : grade elevation,...}
+        self.d_diameter   = dict() #{wid : inner diameter,...}
+        self.d_maxdia     = dict() #{wid : maximum well part diameter,...}
+        self.dz_bot       = dict() #{wid : well bottom elev, ...}
+        self.dz_swl       = dict() #{wid : static water level, ...}
+        self.dz_bdrk      = dict() #{wid : bedrock elevation, }
+        self.dz_casing    = dict() #{wid : casing bottom elev, ... }
+        self.dz_openhole  = dict() #{wid : Openhole(),... }
+        self.dz_droppipe  = dict() #{wid : Droppipe(),... }
         self.dz_hydrofrac = dict() #{wid : Hydrofrac(),... }
             
         # These dictionaries have a list of namedtuples for each wid
-        self.dlz_casing2 = defaultdict(list) #{wid : [Casing(),..], ...}  
-        self.dlz_perf    = defaultdict(list) #{wid : [Perf(),..], ...} 
-        self.dlz_hole    = defaultdict(list) #{wid : [Hole(),..], ...} 
-        self.dlz_grout   = defaultdict(list) #{wid : [Grout(), ...}
-        self.dlz_screen  = defaultdict(list) #{wid : [Screen, ...], ...}
-        self.dlz_strat   = defaultdict(list) #{wid : [Strat, ...], ...}
-        
-#         # Provide a list of all of the commonent dictionaries
-#         self.componentdicts = (
-#             self.d_label, 
-#             self.d_xy,
-#             self.d_aquifer,
-#             self.dz_grade,
-#             self.d_diameter,
-#             self.d_maxdia,
-#             self.dz_bot,
-#             self.dz_swl,
-#             self.dz_bdrk,
-#             self.dz_casing,
-#             self.dz_openhole,
-#             self.dz_droppipe,
-#             self.dz_hydrofrac,
-#             self.dlz_casing2,
-#             self.dlz_perf,
-#             self.dlz_hole,
-#             self.dlz_grout,
-#             self.dlz_screen,
-#             self.dlz_strat) 
-        
-       
+        self.dlz_casing2  = defaultdict(list) #{wid : [Casing(),..], ...}  
+        self.dlz_perf     = defaultdict(list) #{wid : [Perf(),..], ...} 
+        self.dlz_hole     = defaultdict(list) #{wid : [Hole(),..], ...} 
+        self.dlz_grout    = defaultdict(list) #{wid : [Grout(), ...}
+        self.dlz_screen   = defaultdict(list) #{wid : [Screen, ...], ...}
+        self.dlz_strat    = defaultdict(list) #{wid : [Strat, ...], ...}
+               
     def __str__(self):  
         rv = [f"{25*'='}  xsec xsec_data_OWI  {25*'='}", 
               f'xsec_data_OWI source = {self.datasource}']
@@ -456,23 +440,6 @@ class xsec_data_abc(abc.ABC):
         self.ensure_points_have_spread()
         return ( len(self.d_xy) > 0 )
 
-
-#     @abc.abstractmethod
-#     def remove_wid_if_missing_required_components(self, required):   
-#         """ 
-#         Remove data if well is missing required components.
-#         
-#         Arguments
-#         ---------
-#         required : list
-#             Elements of the list are symbols corresponding to required well
-#             components as specified in xsec_cl -R --required choices.  Each 
-#             choice is associated with a drawing method in xsec_main, and the
-#             data dictionary(s) that are required to have data for each drawing
-#             component can be determined by examining those methods.  
-#         """
-#         raise NotImplementedError
-
     def remove_wid_if_missing_required_components(self, required):
         """ 
         Remove data if well is missing required components.
@@ -501,7 +468,6 @@ class xsec_data_abc(abc.ABC):
                 dictionaries in the data module
             
             -   xsec_data_abc.__init__() must initialze the dictionary(s),
-#                 and add them to the list "componentdicts"
             
             -   xsec_data.read_data() must read the data into the dictionary(s)
             
@@ -570,12 +536,6 @@ class xsec_data_abc(abc.ABC):
             self.wids = tuple(wids)
             self.d_xy = {wid: self.d_xy[wid] for wid in self.wids}
         
-#             self.wids = list(wids)
-#             for wid in omitted:
-#                 for d in self.componentdicts:
-#                     if wid in d:
-#                         d.pop(wid)
-
     def _update_zminmax(self, z): 
             self.zmin = min(self.zmin, z)   
             self.zmax = max(self.zmax, z)  

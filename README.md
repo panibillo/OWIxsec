@@ -42,13 +42,17 @@ To use this tool, one needs to:
 
 The command line interface is built using Python's argparse module.  The argparse help describes how to call the tool and how to set the drawing parameters. A demo file is provided that shows examples of command lines, and demonstrates calling the tool from a Python script.  When called from a script, the command line module is used to pre-process command line arguments into the arguments required by the xsec_main module. 
 
-It is presumed that the data source will be the Minnesota CWI database itself, or a clone of it having all of the "c4" data tables described on the MWI website:
-
-[CWI data tables](http://mgsweb2.mngs.umn.edu/cwi_doc/cwiDataTables.htm)
+It is presumed that the data source will be the Minnesota CWI database itself, or a clone of it having all of the ["c4" data tables](http://mgsweb2.mngs.umn.edu/cwi_doc/cwiDataTables.htm) described on the MWI website.  A drawing component for well perforation intervals in included in this tool, though that is not currently included in the c4 data tables. 
 
 To connect to a different data source, see [I]
 
-It is presumed that the method for selecting well identifiers will be GIS based, and that the user may implement methods to convert the graphics for display in a GIS.  But the current version has no GIS links or dependencies, and produces only simple demonstration graphics with matplotlib.  
+It is presumed that the method for selecting well identifiers will be GIS based, and that the user may implement methods to convert the graphics for display in a GIS.  But the current version includes no GIS links or dependencies, and produces only simple demonstration graphics with matplotlib.  
+
+### Setting Up a Data Source
+
+An data source class that reads a SQLite database clone of the CWI c4 tables is defined in the file xsec_data_CWIc4.py
+To read from a different data source, you must define a data source class that inherits from xsec_data_abc, and import it into xsec_main.py as xsec_data_OWI.  
+Please see xsec_data_CWIc4.py as an example of the tasks that your datasource class must perform.
 
 ### Dependencies
 
@@ -99,8 +103,8 @@ That should create a folder named`OWIxsec` with the project files inside of it.
 
 ### Executing the program
 
-	> python <your_path>OWIxsec\src\xsec_demo.py
-	> python <your_path>OWIxsec\src\xsec_main.py -p -i 195748 200828 200830 -a 45 -R M
+	> python <your_path>\OWIxsec\src\xsec_demo.py
+	> python <your_path>\OWIxsec\src\xsec_main.py -p -i 195748 200828 200830 -a 45 -R M
 
 * You can run the demonstration script, `xsec_demo.py` from the command line:
 
@@ -125,7 +129,7 @@ you can also look at `xsec_cl.py`.
 composing a command line, and pass it to `xsec_main.py` from the command 
 line, from within an IDE  or from another script. 
 
-	> python <your_path>OWIxsec\src\xsec_main.py -p -i 195748 200828 200830 -a 45 -R M 
+	> python <your_path>\OWIxsec\src\xsec_main.py -p -i 195748 200828 200830 -a 45 -R M 
 
 	>>> from xsec_main import xsec_Main
 	>>> xsec_Main('-p -i 195748 200828 200830 -a 45 -R M')   
@@ -214,11 +218,11 @@ line, from within an IDE  or from another script.
     
 -   Handle special cases and incomplete or inconsistent data
 
-	+   In the face of incomplete data, or poorly entered data, the program 
-       should attempt to display as much data as possible, and or inform 
-		 the user about what data are missing or appear to be incorrect. 
-		 Missing data from one well or one component should not prevent the 
-		 display of other wells or other components.
+    +   In the face of incomplete data, or poorly entered data, the program 
+        should attempt to display as much data as possible, and/or inform 
+        the user about what data are missing or appear to be incorrect. 
+        Missing data from one well or one component should not prevent the 
+        display of other wells or other components.
 		
 ## Authors
 

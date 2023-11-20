@@ -280,7 +280,7 @@ from projected_line import projected_section_line, update_projection_line_nodes
 import geometry_base  
 
 # Select the data source module and import it as xsec_data.
-from xsec_data_OWI import xsec_data_OWI as xsec_data
+from xsec_data_OWI3 import xsec_data_OWI3 as xsec_data
 
 # import an ouput drawing and publishing module as xsec_draw
 from xsec_draw_plt import xsec_draw
